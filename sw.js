@@ -1,4 +1,4 @@
-const cacheName = 'cache-v1'
+const cacheName = 'cache-v2'
 
 self.addEventListener('install', evt => {
   console.log('install', evt)
@@ -11,7 +11,11 @@ self.addEventListener('install', evt => {
 })
 self.addEventListener('activate', evt => {
   console.log('activate', evt)
-  evt.waitUntil(self.clients.claim())
+  evt.waitUntil(caches.keys().then(cacheNames => {
+    return Promise.all(cacheNames.map(name => {
+      if (name !== cacheName) return caches.delete(name)
+    }))
+  }))
 })
 self.addEventListener('fetch', evt => {
   console.log('fetch', evt)
